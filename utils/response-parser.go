@@ -46,7 +46,11 @@ func ResponseParser(response io.ReadCloser) {
 
 	isNewUI := doc.Find(".table_header").Length() > 0
 
-	log.Println("isNewUI", isNewUI)
+	if isNewUI {
+		UIParserNew(doc)
+	} else {
+		UIParserOld(doc)
+	}
 
 	uptime := systemUptime(body)
 
