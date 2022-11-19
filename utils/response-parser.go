@@ -15,6 +15,7 @@ func parseDoc(response io.ReadCloser) (string, *goquery.Document) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	bodyString := string(bodyBytes)
 	if bodyString == "" {
 		log.Fatalln("No body found")
@@ -27,6 +28,7 @@ func parseDoc(response io.ReadCloser) (string, *goquery.Document) {
 	}
 	return bodyString, doc
 }
+
 func systemUptime(body string) string {
 	// <!> 14 days 02:24:56<!>
 
@@ -36,6 +38,7 @@ func systemUptime(body string) string {
 
 	return systemUptime
 }
+
 func ResponseParser(response io.ReadCloser) {
 	body, doc := parseDoc(response)
 

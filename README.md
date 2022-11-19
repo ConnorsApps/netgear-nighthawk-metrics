@@ -7,7 +7,6 @@ Environment Variables
 NETGEAR_URL
 NETGEAR_PASSWORD
 NETGEAR_USERNAME
-LOGIN_TIMEOUT_SECONDS
 ```
 
 Default Flags
@@ -15,6 +14,6 @@ Default Flags
 go run . \
 --url "http://www.routerlogin.com/" \
 --username "admin" \
---timeout "2" \
+--timeout "2"
 ```
 

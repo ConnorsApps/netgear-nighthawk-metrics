@@ -26,9 +26,11 @@ func createClient(login RouterLogin) *http.Client {
 	return client
 }
 
-func getRequest(client *http.Client, login RouterLogin, url string) io.ReadCloser {
+func getRequest(client *http.Client, login RouterLogin, url string) *http.Response {
 	req, err := http.NewRequest("GET", url, nil)
+
 	req.SetBasicAuth(login.Username, login.Password)
+	req.Header.Set("Connection", "keep-alive")
 
 	if err != nil {
 		log.Fatalln(url, "Unable Create Request", err)
@@ -40,20 +42,21 @@ func getRequest(client *http.Client, login RouterLogin, url string) io.ReadClose
 	if resp.StatusCode != http.StatusOK {
 		log.Fatalln(url, "Response Code", resp.StatusCode, resp)
 	}
-	return resp.Body
+
+	return resp
 }
 
 func MetricsRequest(login RouterLogin) io.ReadCloser {
 	client := createClient(login)
 
-	request := func(url string) io.ReadCloser { return getRequest(client, login, url) }
+	request := func(url string) *http.Response { return getRequest(client, login, url) }
 
 	metricsUrl := login.Url + "/RST_stattbl.htm"
 
 	baseUrlRequest := request(login.Url)
-	baseUrlRequest.Close()
+	defer baseUrlRequest.Body.Close()
 
 	resp := request(metricsUrl)
 
-	return resp
+	return resp.Body
 }
