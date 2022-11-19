@@ -10,4 +10,5 @@ func main() {
 	response := utils.MetricsRequest(login)
 
 	utils.ResponseParser(response)
+
 }

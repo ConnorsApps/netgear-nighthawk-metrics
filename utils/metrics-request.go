@@ -7,13 +7,14 @@ import (
 	"net/http/cookiejar"
 )
 
-func MetricsRequest(login RouterLogin) io.ReadCloser {
+func createClient(login RouterLogin) *http.Client {
 	redirectFunc := func(req *http.Request, via []*http.Request) error {
 		req.SetBasicAuth(login.Username, login.Password)
 		return nil
 	}
 
 	cookieJar, err := cookiejar.New(nil)
+
 	if err != nil {
 		log.Fatalln("Unable to create cookie jar", err)
 	}
@@ -22,23 +23,37 @@ func MetricsRequest(login RouterLogin) io.ReadCloser {
 		Jar:           cookieJar,
 		CheckRedirect: redirectFunc,
 	}
+	return client
+}
 
-	metricsUrl := login.Url + "/RST_stattbl.htm"
-
-	req, err := http.NewRequest("GET", metricsUrl, nil)
+func getRequest(client *http.Client, login RouterLogin, url string) io.ReadCloser {
+	req, err := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(login.Username, login.Password)
 
 	if err != nil {
-		log.Fatalln("Unable Create Request", err)
+		log.Fatalln(url, "Unable Create Request", err)
 	}
 	resp, err := client.Do(req)
-
 	if err != nil {
-		log.Fatalln("Unable to preform GET", err)
+		log.Fatalln(url, "Unable to preform GET", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalln("Response Code", resp.StatusCode, resp)
+		log.Fatalln(url, "Response Code", resp.StatusCode, resp)
 	}
-
 	return resp.Body
+}
+
+func MetricsRequest(login RouterLogin) io.ReadCloser {
+	client := createClient(login)
+
+	request := func(url string) io.ReadCloser { return getRequest(client, login, url) }
+
+	metricsUrl := login.Url + "/RST_stattbl.htm"
+
+	baseUrlRequest := request(login.Url)
+	baseUrlRequest.Close()
+
+	resp := request(metricsUrl)
+
+	return resp
 }
