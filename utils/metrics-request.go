@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 )
 
-func MetricsRequest(login RouterLogin) *http.Response {
+func MetricsRequest(login RouterLogin) io.ReadCloser {
 	redirectFunc := func(req *http.Request, via []*http.Request) error {
 		req.SetBasicAuth(login.Username, login.Password)
 		return nil
@@ -35,5 +36,9 @@ func MetricsRequest(login RouterLogin) *http.Response {
 	if err != nil {
 		log.Fatalln("Unable to preform GET", err)
 	}
-	return resp
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalln("Response Code", resp.StatusCode, resp)
+	}
+
+	return resp.Body
 }
