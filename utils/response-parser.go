@@ -44,6 +44,10 @@ func ResponseParser(response io.ReadCloser) {
 
 	routerTitle := doc.Find("title").First().Text()
 
+	isNewUI := doc.Find(".table_header").Length() > 0
+
+	log.Println("isNewUI", isNewUI)
+
 	uptime := systemUptime(body)
 
 	log.Println("routerTitle", routerTitle, "upTime", uptime)

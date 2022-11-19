@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/cookiejar"
+	"time"
 )
 
 func createClient(login RouterLogin) *http.Client {
@@ -23,24 +24,38 @@ func createClient(login RouterLogin) *http.Client {
 		Jar:           cookieJar,
 		CheckRedirect: redirectFunc,
 	}
+
 	return client
 }
 
 func getRequest(client *http.Client, login RouterLogin, url string) *http.Response {
-	req, err := http.NewRequest("GET", url, nil)
+	req, reqErr := http.NewRequest("GET", url, nil)
 
 	req.SetBasicAuth(login.Username, login.Password)
 	req.Header.Set("Connection", "keep-alive")
 
-	if err != nil {
-		log.Fatalln(url, "Unable Create Request", err)
+	if reqErr != nil {
+		log.Fatalln(url, "Unable Create Request", reqErr)
 	}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatalln(url, "Unable to preform GET", err)
+
+	maxRetries := 20
+	retries := 0
+
+	var resp *http.Response
+	var err error
+
+	for retries < maxRetries {
+		resp, err = client.Do(req)
+
+		if err == nil && resp.StatusCode == http.StatusOK {
+			break
+		} else {
+			time.Sleep(1 * time.Second)
+		}
+		retries++
 	}
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalln(url, "Response Code", resp.StatusCode, resp)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		log.Panicln(url, "Unable to make request", err, resp)
 	}
 
 	return resp
@@ -52,9 +67,6 @@ func MetricsRequest(login RouterLogin) io.ReadCloser {
 	request := func(url string) *http.Response { return getRequest(client, login, url) }
 
 	metricsUrl := login.Url + "/RST_stattbl.htm"
-
-	baseUrlRequest := request(login.Url)
-	defer baseUrlRequest.Body.Close()
 
 	resp := request(metricsUrl)
 
