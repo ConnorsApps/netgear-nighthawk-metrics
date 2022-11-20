@@ -38,7 +38,7 @@ func getRequest(client *http.Client, login RouterLogin, url string) *http.Respon
 		log.Fatalln(url, "Unable Create Request", reqErr)
 	}
 
-	maxRetries := 20
+	maxRetries := 7
 	retries := 0
 
 	var resp *http.Response
