@@ -39,20 +39,18 @@ func systemUptime(body string) string {
 	return systemUptime
 }
 
-func ResponseParser(response io.ReadCloser) {
+func PraseHtml(response io.ReadCloser) {
 	body, doc := parseDoc(response)
 
 	routerTitle := doc.Find("title").First().Text()
 
 	isNewUI := doc.Find(".table_header").Length() > 0
 
-	if isNewUI {
-		UIParserNew(doc)
-	} else {
-		UIParserOld(doc)
-	}
+	stats := ParseHtmlTable(doc, isNewUI)
 
 	uptime := systemUptime(body)
+
+	log.Println("stats", stats)
 
 	log.Println("routerTitle", routerTitle, "upTime", uptime)
 }

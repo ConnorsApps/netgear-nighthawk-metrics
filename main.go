@@ -9,6 +9,6 @@ func main() {
 
 	response := utils.MetricsRequest(login)
 
-	utils.ResponseParser(response)
+	utils.PraseHtml(response)
 
 }
