@@ -38,12 +38,12 @@ Flags
 ## Helm Chart Usage
 - Add Repository
 ```
-helm repo add connorsapps-netgear https://connorsapps.github.io/netgear-nighthawk-metrics
+helm repo add connorsapps https://connorsapps.github.io/charts
 ```
 
 - Install Chart
 ```
-helm install netgear-metrics connorsapps-netgear/netgear-metrics
+helm install netgear-metrics connorsapps/netgear-metrics
 ```
 
 - Delete Chart ☹️
