@@ -8,23 +8,27 @@ import (
 )
 
 const DEFAULT_USERNAME = "admin"
+const DEFAULT_PORT = "8080"
 const DEFAULT_URL = "http://www.routerlogin.com"
 
-type RouterLogin struct {
+type AppArgs struct {
 	Url      string
 	Username string
 	Password string
+	Port     string
 }
 
-func ParseArgs() RouterLogin {
+func ParseArgs() AppArgs {
 	// Environment Variables
 	env_url := os.Getenv("NETGEAR_URL")
 	env_password := os.Getenv("NETGEAR_PASSWORD")
 	env_username := os.Getenv("NETGEAR_USERNAME")
+	env_port := os.Getenv("PORT")
 
 	// CMD flags
-	url := flag.String("url", env_url, "Router Url")
-	username := flag.String("username", env_username, "Router Username")
+	url := *flag.String("url", env_url, "Router Url")
+	username := *flag.String("username", env_username, "Router Username")
+	port := *flag.String("port", env_port, "App Port")
 
 	flag.Parse()
 
@@ -32,25 +36,27 @@ func ParseArgs() RouterLogin {
 		log.Panicln("Router Password is required")
 	}
 
-	var router_username string
-	var router_url string
-
 	// Set defaults
-	if username == nil || *username == "" {
-		router_username = DEFAULT_USERNAME
-	} else {
-		router_username = *username
+	if username == "" {
+		username = DEFAULT_USERNAME
 	}
 
-	if url == nil || *url == "" {
-		router_url = DEFAULT_URL
+	if url == "" {
+		url = DEFAULT_URL
 	} else {
-		router_url = strings.TrimSuffix(*url, "/")
+		url = strings.TrimSuffix(url, "/")
 	}
 
-	return RouterLogin{
-		Url:      router_url,
-		Username: router_username,
+	if port == "" {
+		port = DEFAULT_PORT
+	} else {
+		port = strings.TrimSpace(port)
+	}
+
+	return AppArgs{
+		Url:      url,
+		Username: username,
 		Password: env_password,
+		Port:     port,
 	}
 }

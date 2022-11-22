@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func createClient(login RouterLogin) *http.Client {
-	redirectFunc := func(req *http.Request, via []*http.Request) error {
-		req.SetBasicAuth(login.Username, login.Password)
+func createClient(appArgs AppArgs) *http.Client {
+	redirectFunc := func(req *http.Request, _ []*http.Request) error {
+		req.SetBasicAuth(appArgs.Username, appArgs.Password)
 		return nil
 	}
 
@@ -28,10 +28,10 @@ func createClient(login RouterLogin) *http.Client {
 	return client
 }
 
-func getRequest(client *http.Client, login RouterLogin, url string) *http.Response {
+func getRequest(client *http.Client, appArgs AppArgs, url string) *http.Response {
 	req, reqErr := http.NewRequest("GET", url, nil)
 
-	req.SetBasicAuth(login.Username, login.Password)
+	req.SetBasicAuth(appArgs.Username, appArgs.Password)
 	req.Header.Set("Connection", "keep-alive")
 
 	if reqErr != nil {
@@ -61,12 +61,12 @@ func getRequest(client *http.Client, login RouterLogin, url string) *http.Respon
 	return resp
 }
 
-func MetricsRequest(login RouterLogin) io.ReadCloser {
-	client := createClient(login)
+func RouterRequest(appArgs AppArgs) io.ReadCloser {
+	client := createClient(appArgs)
 
-	request := func(url string) *http.Response { return getRequest(client, login, url) }
+	request := func(url string) *http.Response { return getRequest(client, appArgs, url) }
 
-	metricsUrl := login.Url + "/RST_stattbl.htm"
+	metricsUrl := appArgs.Url + "/RST_stattbl.htm"
 
 	resp := request(metricsUrl)
 

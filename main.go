@@ -1,14 +1,23 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/ConnorsApps/netgear-nighthawk-metrics/utils"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// response := utils.RouterRequest(args)
+
 func main() {
-	login := utils.ParseArgs()
+	args := utils.ParseArgs()
 
-	response := utils.MetricsRequest(login)
+	foo := utils.Collector()
+	prometheus.MustRegister(foo)
 
-	utils.PraseHtml(response)
+	http.Handle("/metrics", promhttp.Handler())
 
+	log.Fatal(http.ListenAndServe(":"+args.Port, nil))
 }

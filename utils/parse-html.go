@@ -39,18 +39,30 @@ func systemUptime(body string) string {
 	return systemUptime
 }
 
-func PraseHtml(response io.ReadCloser) {
+type Stats struct {
+	RouterTitle string
+	Ports       []PortStats
+	Uptime      string
+}
+
+func PraseHtml(response io.ReadCloser) Stats {
 	body, doc := parseDoc(response)
 
 	routerTitle := doc.Find("title").First().Text()
 
 	isNewUI := doc.Find(".table_header").Length() > 0
 
-	stats := ParseHtmlTable(doc, isNewUI)
+	portStats := ParseHtmlTable(doc, isNewUI)
 
 	uptime := systemUptime(body)
 
-	log.Println("stats", stats)
+	log.Println("portStats", portStats)
 
 	log.Println("routerTitle", routerTitle, "upTime", uptime)
+
+	return Stats{
+		RouterTitle: routerTitle,
+		Ports:       portStats,
+		Uptime:      uptime,
+	}
 }

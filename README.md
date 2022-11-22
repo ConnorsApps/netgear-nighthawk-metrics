@@ -20,10 +20,12 @@ Environment Variables
 NETGEAR_URL="http://www.routerlogin.com/"
 NETGEAR_PASSWORD="admin"
 NETGEAR_USERNAME="2"
+PORT="8080"
 ```
 
 Flags
 ```
 --url
 --username
+--port
 ```
