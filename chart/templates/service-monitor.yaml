@@ -1,0 +1,18 @@
+{{- if .Values.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{- $fullName := include "netgear-metrics.fullname" . -}}
+  labels:
+    {{- include "netgear-metrics.labels" . | nindent 4 }}
+    {{- include .Values.serviceMonitor.labels . | nindent 4 }}    
+spec:
+  selector:
+    matchLabels:
+      {{- include "netgear-metrics.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - port: metrics-port
+    interval: 1m
+    path: /metrics
+    scrapeTimeout: 1m
+{{- end -}}

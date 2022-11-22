@@ -1,10 +1,14 @@
 # Netgear Nighthawk Metrics
 
-Prometheus Exporter for MR60 Mesh & R8000P Netgear Routers
+Prometheus Exporter Netgear Routers.
+
+Tested models
+- `Nighthawk MR60 Mesh`
+- `Nighthawk R8000P`
 
 Parses HTML from http://www.routerlogin.com/RST_stattbl.htm from two router models.
 
-Netgear products have bad customer support and extensibility. If you're reading this then you might not want to buy a new router.
+Netgear products have bad customer support and extensibility. If you're reading this, you're probably not going to replace your $300 router right away so I hope this fills a need.
 
 `Nighthawk R8000P` 90s interface
 
