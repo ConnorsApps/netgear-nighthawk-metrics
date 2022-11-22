@@ -9,12 +9,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// response := utils.RouterRequest(args)
-
 func main() {
 	args := utils.ParseArgs()
 
-	foo := utils.Collector()
+	foo := utils.PortsCollector(args)
 	prometheus.MustRegister(foo)
 
 	http.Handle("/metrics", promhttp.Handler())

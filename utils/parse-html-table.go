@@ -13,6 +13,7 @@ const NEW_TABLE_SELECTOR = "body > div > table"
 
 type PortStats struct {
 	Port                      string
+	ThroughputStatus          int
 	Status                    string
 	TransmittedPackets        int
 	ReceivedPackets           int
@@ -33,6 +34,23 @@ func toInt(str string) int {
 		return intVar
 	}
 }
+func ThroughputStatus(str string) int {
+	// Example inputs 1000M/Full, Link Down, 750M, 1652M
+
+	if strings.ToLower(str) == "link down" {
+		return 0
+	}
+	str = strings.Replace(str, "/Full", "", 1)
+
+	if strings.Contains(str, "M") {
+		str = strings.Replace(str, "M", "", 1)
+
+		return toInt(str)
+	} else {
+		log.Fatalln("Unknown Router Status", str)
+		return 0
+	}
+}
 
 func parseRow(col *goquery.Selection) PortStats {
 	var stat PortStats
@@ -47,6 +65,7 @@ func parseRow(col *goquery.Selection) PortStats {
 		if y == 0 {
 			stat.Port = text
 		} else if y == 1 {
+			stat.ThroughputStatus = ThroughputStatus(text)
 			stat.Status = text
 		} else if y == 2 {
 			stat.TransmittedPackets = toInt(text)
