@@ -7,55 +7,101 @@ import (
 var appArgs AppArgs
 
 type RouterCollector struct {
-	fooMetric *prometheus.GaugeVec
+	port                      *prometheus.GaugeVec
+	throughput                *prometheus.GaugeVec
+	transmittedPackets        *prometheus.GaugeVec
+	receivedPackets           *prometheus.GaugeVec
+	collisions                *prometheus.GaugeVec
+	transmittedBytesPerSecond *prometheus.GaugeVec
+	receivedBytesPerSecond    *prometheus.GaugeVec
 }
 
 func (collector *RouterCollector) Describe(ch chan<- *prometheus.Desc) {
-	collector.fooMetric.Describe(ch)
+	collector.port.Describe(ch)
+	collector.throughput.Describe(ch)
+	collector.transmittedPackets.Describe(ch)
+	collector.receivedPackets.Describe(ch)
+	collector.collisions.Describe(ch)
+	collector.transmittedBytesPerSecond.Describe(ch)
+	collector.receivedBytesPerSecond.Describe(ch)
 }
 
 func (collector *RouterCollector) Collect(ch chan<- prometheus.Metric) {
-	// var metricValue = 1
-
 	response := RouterRequest(appArgs)
 
 	stats := PraseHtml(response)
 
-	// collector.fooMetric.withlabels
-	// stats.Ports
-	// collector.fooMetric, prometheus.CounterValue, float64(metricValue)
-
-	// type PortStats struct {
-	// 	Port                      string
-	// 	ThroughputStatus          int
-	// 	Status                    string
-	// 	TransmittedPackets        int
-	// 	ReceivedPackets           int
-	// 	Collisions                int
-	// 	TransmittedBytesPerSecond int
-	// 	ReceivedBytesPerSecond    int
-	// 	Uptime                    string
-	// }
 	for _, port := range stats.Ports {
-		// labels := [2]string{port.Port, port.Status}
-
-		collector.fooMetric.WithLabelValues(port.Port, port.Status).Set(float64(1))
-
+		collector.port.WithLabelValues(port.Port, port.Status).Set(float64(1))
+		collector.throughput.WithLabelValues(port.Port).Set(port.ThroughputStatus)
+		collector.transmittedPackets.WithLabelValues(port.Port).Set(port.TransmittedPackets)
+		collector.receivedPackets.WithLabelValues(port.Port).Set(port.ReceivedPackets)
+		collector.collisions.WithLabelValues(port.Port).Set(port.Collisions)
+		collector.transmittedBytesPerSecond.WithLabelValues(port.Port).Set(port.TransmittedBytesPerSecond)
+		collector.receivedBytesPerSecond.WithLabelValues(port.Port).Set(port.ReceivedBytesPerSecond)
 	}
-	collector.fooMetric.Collect(ch)
 
+	collector.port.Collect(ch)
+	collector.throughput.Collect(ch)
+	collector.transmittedPackets.Collect(ch)
+	collector.receivedPackets.Collect(ch)
+	collector.collisions.Collect(ch)
+	collector.transmittedBytesPerSecond.Collect(ch)
+	collector.receivedBytesPerSecond.Collect(ch)
 }
 
 func PortsCollector(args AppArgs) *RouterCollector {
 	appArgs = args
-	fooMetric := prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "mynamespace",
-		Subsystem: "client",
-		Name:      "info",
-		Help:      "something",
+	namespace := "netgear"
+	port := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "port",
+		Help:      "Netgear Port status",
 	}, []string{"port", "status"})
 
+	throughput := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "throughput_status",
+		Help:      "Netgear Port Throughput from port status in Megabytes",
+	}, []string{"port"})
+
+	transmitted := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "transmitted",
+		Help:      "Number of trasmitted packets",
+	}, []string{"port"})
+
+	receivedPackets := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "received_packets",
+		Help:      "Number of received packets",
+	}, []string{"port"})
+
+	collisions := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "collisions",
+		Help:      "Number of collisions",
+	}, []string{"port"})
+
+	transmittedBytesPerSecond := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "transmitted_bytes_per_second",
+		Help:      "Trasmitted Bytes Per Second",
+	}, []string{"port"})
+
+	receivedBytesPerSecond := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "received_bytes_per_second",
+		Help:      "Received Bytes Per Second",
+	}, []string{"port"})
+
 	return &RouterCollector{
-		fooMetric,
+		port,
+		throughput,
+		transmitted,
+		receivedPackets,
+		collisions,
+		transmittedBytesPerSecond,
+		receivedBytesPerSecond,
 	}
 }

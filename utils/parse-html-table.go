@@ -13,28 +13,28 @@ const NEW_TABLE_SELECTOR = "body > div > table"
 
 type PortStats struct {
 	Port                      string
-	ThroughputStatus          int
+	ThroughputStatus          float64
 	Status                    string
-	TransmittedPackets        int
-	ReceivedPackets           int
-	Collisions                int
-	TransmittedBytesPerSecond int
-	ReceivedBytesPerSecond    int
+	TransmittedPackets        float64
+	ReceivedPackets           float64
+	Collisions                float64
+	TransmittedBytesPerSecond float64
+	ReceivedBytesPerSecond    float64
 	Uptime                    string
 }
 
-func toInt(str string) int {
+func toFloat(str string) float64 {
 	if str == "--" {
 		return 0
 	} else {
-		intVar, err := strconv.Atoi(str)
+		floatVar, err := strconv.ParseFloat(str, 64)
 		if err != nil {
 			log.Panicln("Unable to convert", str, "to int", err)
 		}
-		return intVar
+		return floatVar
 	}
 }
-func ThroughputStatus(str string) int {
+func ThroughputStatus(str string) float64 {
 	// Example inputs 1000M/Full, Link Down, 750M, 1652M
 
 	if strings.ToLower(str) == "link down" {
@@ -45,7 +45,7 @@ func ThroughputStatus(str string) int {
 	if strings.Contains(str, "M") {
 		str = strings.Replace(str, "M", "", 1)
 
-		return toInt(str)
+		return toFloat(str)
 	} else {
 		log.Fatalln("Unknown Router Status", str)
 		return 0
@@ -68,15 +68,15 @@ func parseRow(col *goquery.Selection) PortStats {
 			stat.ThroughputStatus = ThroughputStatus(text)
 			stat.Status = text
 		} else if y == 2 {
-			stat.TransmittedPackets = toInt(text)
+			stat.TransmittedPackets = toFloat(text)
 		} else if y == 3 {
-			stat.ReceivedPackets = toInt(text)
+			stat.ReceivedPackets = toFloat(text)
 		} else if y == 4 {
-			stat.Collisions = toInt(text)
+			stat.Collisions = toFloat(text)
 		} else if y == 5 {
-			stat.TransmittedBytesPerSecond = toInt(text)
+			stat.TransmittedBytesPerSecond = toFloat(text)
 		} else if y == 6 {
-			stat.ReceivedBytesPerSecond = toInt(text)
+			stat.ReceivedBytesPerSecond = toFloat(text)
 		} else if y == 7 {
 			if text == "--" {
 				stat.Uptime = ""

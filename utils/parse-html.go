@@ -56,10 +56,6 @@ func PraseHtml(response io.ReadCloser) Stats {
 
 	uptime := systemUptime(body)
 
-	log.Println("portStats", portStats)
-
-	log.Println("routerTitle", routerTitle, "upTime", uptime)
-
 	return Stats{
 		RouterTitle: routerTitle,
 		Ports:       portStats,
