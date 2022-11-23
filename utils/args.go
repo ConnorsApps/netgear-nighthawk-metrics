@@ -20,9 +20,9 @@ type AppArgs struct {
 
 func ParseArgs() AppArgs {
 	// Environment Variables
-	env_url := os.Getenv("NETGEAR_URL")
-	env_password := os.Getenv("NETGEAR_PASSWORD")
-	env_username := os.Getenv("NETGEAR_USERNAME")
+	env_url := os.Getenv("ROUTER_URL")
+	env_password := os.Getenv("ROUTER_PASSWORD")
+	env_username := os.Getenv("ROUTER_USERNAME")
 	env_port := os.Getenv("PORT")
 
 	// CMD flags

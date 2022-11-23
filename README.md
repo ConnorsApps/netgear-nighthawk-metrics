@@ -22,9 +22,9 @@ Netgear products have bad customer support and extensibility. If you're reading 
 
 ## Environment Variables
 ```
-NETGEAR_URL="http://www.routerlogin.com/"
-NETGEAR_PASSWORD="admin"
-NETGEAR_USERNAME="2"
+ROUTER_URL="http://www.routerlogin.com/"
+ROUTER_PASSWORD=""
+ROUTER_USERNAME="admin"
 PORT="8080"
 ```
 
@@ -38,12 +38,12 @@ Flags
 ## Helm Chart Usage
 - Add Repository
 ```
-helm repo add connorsapps https://connorsapps.github.io/charts
+helm repo add connorsapps-netgear https://connorsapps.github.io/netgear-nighthawk-metrics
 ```
 
 - Install Chart
 ```
-helm install netgear-metrics connorsapps/netgear-metrics
+helm install netgear-metrics connorsapps-netgear/netgear-metrics
 ```
 
 - Delete Chart ☹️

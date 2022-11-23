@@ -9,6 +9,18 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+serviceMonitor:
+  enabled: true
+  labels:
+    # Pickup service monitor from existing Prometheus Deployment
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+    release: kube-prom-stack
+
+routerLogin:
+  url: http://www.routerlogin.com/
+  password: ""
+  username: "admin"
+
 serviceAccount:
   create: false
   annotations: {}
@@ -24,12 +36,6 @@ service:
   type: ClusterIP
   port: 80
 
-serviceMonitor:
-  enabled: true
-  labels:
-    # Pickup service monitor from existing Prometheus Deployment
-    # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
-    release: kube-prom-stack
 
 ingress:
   enabled: false
