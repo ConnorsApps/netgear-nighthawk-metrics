@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  netgear-metrics:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-11-23T00:38:21.191650566Z"
+    description: Prometheus Exporter for Netgear Routers
+    digest: 8b41165fa3ec2d2e06b13e91423599529548b77bfe37995b8d19c03ce1099c6d
+    name: netgear-metrics
+    type: application
+    urls:
+    - https://github.com/ConnorsApps/netgear-nighthawk-metrics/releases/download/netgear-metrics-1.0.2/netgear-metrics-1.0.2.tgz
+    version: 1.0.2
+generated: "2022-11-23T00:38:21.191654466Z"
