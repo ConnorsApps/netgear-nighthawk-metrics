@@ -17,13 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          repository: ConnorsApps/netgear-nighthawk-metrics
-          path: charts/
-
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
