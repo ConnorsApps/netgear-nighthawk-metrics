@@ -4,5 +4,5 @@ description: Prometheus Exporter for Netgear Routers
 
 type: application
 
-version: 1.0.8
+version: 1.0.9
 appVersion: "1.0.0"
