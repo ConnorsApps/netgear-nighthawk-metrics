@@ -34,30 +34,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-            - secretFrom:
+            - secretRef:
                 name: {{ .Release.Name }}-router-auth
-          # env:
-          #   - name: "ROUTER_URL"
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: {{ .Release.Name }}-router-auth
-          #         key: url
-          #         optional: false
-          #   - name: "ROUTER_PASSWORD"
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: {{ .Release.Name }}-router-auth
-          #         key: password
-          #         optional: false
-          #   - name: "ROUTER_USERNAME"
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: {{ .Release.Name }}-router-auth
-          #         key: username
-          #         optional: false
-          #   - name: "PORT"
-          #     value: {{ .Values.service.port | quote }}
-
+            - configMapRef:
+                name: {{ .Release.Name }}-router-config
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
