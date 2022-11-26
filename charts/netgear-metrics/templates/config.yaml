@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-router-config
+  labels:
+    {{- include "netgear-metrics.labels" . | nindent 4 }}
+data:
+  {{- range $key, $val := .Values.env.config }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

@@ -16,10 +16,13 @@ serviceMonitor:
     # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     release: kube-prom-stack
 
-routerLogin:
-  url: http://www.routerlogin.com/
-  password: ""
-  username: "admin"
+env:
+  config:
+    PORT: "8080"
+    ROUTER_URL: http://www.routerlogin.com/
+  secrets:
+    ROUTER_PASSWORD: ""
+    ROUTER_USERNAME: "admin"
 
 serviceAccount:
   create: false
