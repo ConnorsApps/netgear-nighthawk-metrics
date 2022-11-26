@@ -5,7 +5,7 @@ metadata:
   name: {{- $fullName := include "netgear-metrics.fullname" . -}}
   labels:
     {{- include "netgear-metrics.labels" . | nindent 4 }}
-    {{- include .Values.serviceMonitor.labels . | nindent 4 }}    
+    {{- toYaml .Values.serviceMonitor.labels | nindent 4 }}    
 spec:
   selector:
     matchLabels:
