@@ -36,18 +36,24 @@ spec:
           env:
             - name: "ROUTER_URL"
               valueFrom:
-                secretKeyRef: url
-                name: {{ .Release.Name }}-router-auth
+                secretKeyRef:
+                  name: {{ .Release.Name }}-router-auth
+                  key: url
+                  optional: false
             - name: "ROUTER_PASSWORD"
               valueFrom:
-                secretKeyRef: password
-                name: {{ .Release.Name }}-router-auth
+                secretKeyRef:
+                  name: {{ .Release.Name }}-router-auth
+                  key: password
+                  optional: false
             - name: "ROUTER_USERNAME"
               valueFrom:
-                secretKeyRef: username
-                name: {{ .Release.Name }}-router-auth
+                secretKeyRef:
+                  name: {{ .Release.Name }}-router-auth
+                  key: username
+                  optional: false
             - name: "PORT"
-              value: {{ .Values.service.port }}
+              value: {{ .Values.service.port | quote }}
 
           ports:
             - name: http
