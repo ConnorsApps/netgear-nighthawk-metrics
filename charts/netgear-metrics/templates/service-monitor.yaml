@@ -13,7 +13,7 @@ spec:
       {{- include "netgear-metrics.selectorLabels" . | nindent 6 }}
   endpoints:
   - port: metrics-port
-    interval: 1m
+    interval: {{ .Values.serviceMonitor.interval | quote }}
     path: /metrics
-    scrapeTimeout: 1m
+    scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout | quote }}
 {{- end -}}

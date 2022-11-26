@@ -38,6 +38,9 @@ spec:
                 name: {{ .Release.Name }}-router-auth
             - configMapRef:
                 name: {{ .Release.Name }}-router-config
+          env:
+            - name: PORT
+              value: {{ .Values.service.port | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -11,6 +11,8 @@ fullnameOverride: ""
 
 serviceMonitor:
   enabled: true
+  interval: 1m
+  scrapeTimeout: 1m
   labels:
     # Pickup service monitor from existing Prometheus Deployment
     # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
@@ -18,7 +20,6 @@ serviceMonitor:
 
 env:
   config:
-    PORT: "8080"
     ROUTER_URL: http://www.routerlogin.com/
   secrets:
     ROUTER_PASSWORD: ""
@@ -38,7 +39,6 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 8080
-
 
 ingress:
   enabled: false
