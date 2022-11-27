@@ -9,6 +9,8 @@ Tested models
 ## Intro
 Parses HTML from http://www.routerlogin.com/RST_stattbl.htm from two router models.
 
+Note: This script ends any other sessions on the router admin page.
+
 Netgear products have bad customer support and extensibility. If you're reading this, you're probably not going to replace your $300 router right away so I hope this fills a need.
 
 `Nighthawk R8000P` 90s interface
