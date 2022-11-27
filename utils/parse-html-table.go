@@ -47,7 +47,7 @@ func ThroughputStatus(str string) float64 {
 
 		return toFloat(str)
 	} else {
-		log.Fatalln("Unknown Router Status", str)
+		log.Panicln("Unknown Router Status", str)
 		return 0
 	}
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -16,18 +17,18 @@ func parseDoc(response io.ReadCloser) (string, *goquery.Document) {
 
 	bodyBytes, err := io.ReadAll(response)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	bodyString := string(bodyBytes)
 	if bodyString == "" {
-		log.Fatalln("No body found")
+		log.Panicln("No body found")
 	}
 	parsedHtmlReader := strings.NewReader(bodyString)
 
 	doc, err := goquery.NewDocumentFromReader(parsedHtmlReader)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 	return bodyString, doc
 }
@@ -41,7 +42,7 @@ func createClient(appArgs AppArgs) *http.Client {
 	cookieJar, err := cookiejar.New(nil)
 
 	if err != nil {
-		log.Fatalln("Unable to create cookie jar", err)
+		log.Panicln("Unable to create cookie jar", err)
 	}
 
 	client := &http.Client{
@@ -59,7 +60,7 @@ func getRequest(client *http.Client, appArgs AppArgs, url string) (string, *goqu
 	req.Header.Set("Connection", "keep-alive")
 
 	if reqErr != nil {
-		log.Fatalln(url, "Unable Create Request", reqErr)
+		log.Panicln(url, "Unable Create Request", reqErr)
 	}
 
 	maxRetries := 7
@@ -85,14 +86,16 @@ func getRequest(client *http.Client, appArgs AppArgs, url string) (string, *goqu
 	return parseDoc(resp.Body)
 }
 
-func postRequest(client *http.Client, appArgs AppArgs, url string) (string, *goquery.Document) {
-	req, reqErr := http.NewRequest("POST", url, nil)
+func postRequest(client *http.Client, appArgs AppArgs, url string, body string) {
+	bodyReader := strings.NewReader(body)
+	req, reqErr := http.NewRequest("POST", url, bodyReader)
 
 	req.SetBasicAuth(appArgs.Username, appArgs.Password)
 	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if reqErr != nil {
-		log.Fatalln(url, "Unable Create Request", reqErr)
+		log.Panicln(url, "Unable Create Request", reqErr)
 	}
 
 	var resp *http.Response
@@ -103,8 +106,6 @@ func postRequest(client *http.Client, appArgs AppArgs, url string) (string, *goq
 	if err != nil || resp.StatusCode != http.StatusOK {
 		log.Panicln(url, "Unable to make request", err, resp)
 	}
-
-	return parseDoc(resp.Body)
 }
 
 func RouterRequest(appArgs AppArgs) (string, *goquery.Document) {
@@ -118,20 +119,16 @@ func RouterRequest(appArgs AppArgs) (string, *goquery.Document) {
 	// End session on other device and retry.
 
 	if strings.Contains(body, `top.location.href = "MNU_access_multiLogin2.htm";`) {
-		multipleLoginsUrl := appArgs.Url + "/MNU_access_multiLogin2.htm"
-		body, doc = getRequest(client, appArgs, multipleLoginsUrl)
+		fmt.Println("Another Session Is Active, Proceed Anyways")
 
-		action, exists := doc.Find("body > form").Attr("action")
-		log.Println("action", action, "exists", exists)
-		log.Println("body", body)
-		// document.forms[0].act.value="yes";
-		// document.forms[0].submit();
-		// use proxy
+		multipleLoginsUrl := appArgs.Url + "/MNU_access_multiLogin2.htm"
+		_, doc = getRequest(client, appArgs, multipleLoginsUrl)
+
+		action, _ := doc.Find("body > form").Attr("action")
 
 		logoutUrl := appArgs.Url + "/" + action
-		body, _ = postRequest(client, appArgs, logoutUrl)
 
-		log.Println("body", body)
+		postRequest(client, appArgs, logoutUrl, "yes=&act=yes")
 
 		body, doc = getRequest(client, appArgs, metricsUrl)
 	}
