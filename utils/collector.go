@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -14,6 +17,7 @@ type RouterCollector struct {
 	collisions                *prometheus.GaugeVec
 	transmittedBytesPerSecond *prometheus.GaugeVec
 	receivedBytesPerSecond    *prometheus.GaugeVec
+	routerUptime              *prometheus.GaugeVec
 }
 
 func (collector *RouterCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -24,12 +28,15 @@ func (collector *RouterCollector) Describe(ch chan<- *prometheus.Desc) {
 	collector.collisions.Describe(ch)
 	collector.transmittedBytesPerSecond.Describe(ch)
 	collector.receivedBytesPerSecond.Describe(ch)
+	collector.routerUptime.Describe(ch)
 }
 
 func (collector *RouterCollector) Collect(ch chan<- prometheus.Metric) {
-	response := RouterRequest(appArgs)
+	start := time.Now()
 
-	stats := PraseHtml(response)
+	body, doc := RouterRequest(appArgs)
+
+	stats := PraseHtml(body, doc)
 
 	for _, port := range stats.Ports {
 		collector.port.WithLabelValues(port.Port, port.Status).Set(float64(1))
@@ -40,6 +47,7 @@ func (collector *RouterCollector) Collect(ch chan<- prometheus.Metric) {
 		collector.transmittedBytesPerSecond.WithLabelValues(port.Port).Set(port.TransmittedBytesPerSecond)
 		collector.receivedBytesPerSecond.WithLabelValues(port.Port).Set(port.ReceivedBytesPerSecond)
 	}
+	collector.routerUptime.WithLabelValues(stats.RouterTitle).Set(1)
 
 	collector.port.Collect(ch)
 	collector.throughput.Collect(ch)
@@ -48,6 +56,11 @@ func (collector *RouterCollector) Collect(ch chan<- prometheus.Metric) {
 	collector.collisions.Collect(ch)
 	collector.transmittedBytesPerSecond.Collect(ch)
 	collector.receivedBytesPerSecond.Collect(ch)
+	collector.routerUptime.Collect(ch)
+
+	elapsed := time.Since(start)
+
+	fmt.Printf("Collected in %s\n", elapsed)
 }
 
 func PortsCollector(args AppArgs) *RouterCollector {
@@ -95,6 +108,12 @@ func PortsCollector(args AppArgs) *RouterCollector {
 		Help:      "Received Bytes Per Second",
 	}, []string{"port"})
 
+	routerUptime := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "router_uptime",
+		Help:      "Router Uptime",
+	}, []string{"routerTitle"})
+
 	return &RouterCollector{
 		port,
 		throughput,
@@ -103,5 +122,6 @@ func PortsCollector(args AppArgs) *RouterCollector {
 		collisions,
 		transmittedBytesPerSecond,
 		receivedBytesPerSecond,
+		routerUptime,
 	}
 }

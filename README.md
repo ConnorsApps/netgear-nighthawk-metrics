@@ -30,9 +30,8 @@ PORT="8080"
 
 Flags
 ```
---url
---username
---port
+export ROUTER_PASSWORD=""
+go run . --url --username --port
 ```
 
 ## Helm Chart Usage
